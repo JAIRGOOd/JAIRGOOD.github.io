@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Chart with Controls</title>
+  <style>
+    #chartdiv {
+      width: 100%;
+      height: 500px;
+      background-color: #fefefe; /* Cambia aquí el color de fondo */
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Resources -->
+  <script src="https://cdn.amcharts.com/lib/5/index.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/xy.js"></script>
+  <script src="https://cdn.amcharts.com/lib/5/themes/Animated.js"></script>
+
+  <!-- Chart code -->
+  <script>
+    am5.ready(function() {
+
+      // Create root element
+      var root = am5.Root.new("chartdiv");
+
+      // Set themes
+      root.setThemes([
+        am5themes_Animated.new(root)
+      ]);
+
+      var data = [{
+        name: "TALLER DE EMPREN",
+        steps: 45688,
+        pictureSettings: {
+          src: "https://www.amcharts.com/wp-content/uploads/2019/04/monica.jpg"
+        }
+      }, {
+        name: "INTELIGENCIA DE NEGOCIOS",
+        steps: 35781,
+        pictureSettings: {
+          src: "https://www.amcharts.com/wp-content/uploads/2019/04/joey.jpg"
+        }
+      }, {
+        name: "CIBERSEGURIDAD INFO",
+        steps: 25464,
+        pictureSettings: {
+          src: "https://www.amcharts.com/wp-content/uploads/2019/04/ross.jpg"
+        }
+      }, {
+        name: "ESTRATEGIAS DE STI",
+        steps: 18788,
+        pictureSettings: {
+          src: "https://www.amcharts.com/wp-content/uploads/2019/04/phoebe.jpg"
+        }
+      }, {
+        name: "DESARROLLO DE APPS",
+        steps: 15465,
+        pictureSettings: {
+          src: "https://www.amcharts.com/wp-content/uploads/2019/04/rachel.jpg"
+        }
+      }, {
+        name: "SERVICIO SOCIAL",
+        steps: 11561,
+        pictureSettings: {
+          src: "https://www.amcharts.com/wp-content/uploads/2019/04/chandler.jpg"
+        }
+      }];
+
+      var chart = root.container.children.push(
+        am5xy.XYChart.new(root, {
+          panX: false,
+          panY: false,
+          wheelX: "none",
+          wheelY: "none",
+          paddingBottom: 50,
+          paddingTop: 40,
+          paddingLeft:0,
+          paddingRight:0
+        })
+      );
+
+      var xRenderer = am5xy.AxisRendererX.new(root, {
+        minorGridEnabled:true,
+        minGridDistance:60
+      });
+      xRenderer.grid.template.set("visible", false);
+
+      var xAxis = chart.xAxes.push(
+        am5xy.CategoryAxis.new(root, {
+          paddingTop:40,
+          categoryField: "name",
+          renderer: xRenderer
+        })
+      );
+
+
+      var yRenderer = am5xy.AxisRendererY.new(root, {});
+      yRenderer.grid.template.set("strokeDasharray", [3]);
+
+      var yAxis = chart.yAxes.push(
+        am5xy.ValueAxis.new(root, {
+          min: 10,
+          max: 100,
+          renderer: yRenderer
+        })
+      );
+
+      var series = chart.series.push(
+        am5xy.ColumnSeries.new(root, {
+          name: "Income",
+          xAxis: xAxis,
+          yAxis: yAxis,
+          valueYField: "steps",
+          categoryXField: "name",
+          sequencedInterpolation: true,
+          calculateAggregates: true,
+          maskBullets: false,
+          tooltip: am5.Tooltip.new(root, {
+            dy: -30,
+            pointerOrientation: "vertical",
+            labelText: "{valueY}"
+          })
+        })
+      );
+
+      series.columns.template.setAll({
+        strokeOpacity: 0,
+        cornerRadiusBR: 10,
+        cornerRadiusTR: 10,
+        cornerRadiusBL: 10,
+        cornerRadiusTL: 10,
+        maxWidth: 50,
+        fillOpacity: 0.8
+      });
+
+      series.data.setAll(data);
+      xAxis.data.setAll(data);
+
+      var cursor = chart.set("cursor", am5xy.XYCursor.new(root, {}));
+      cursor.lineX.set("visible", false);
+      cursor.lineY.set("visible", false);
+
+      // Make stuff animate on load
+      series.appear();
+      chart.appear(1000, 100);
+
+      // Function to update chart data
+      window.updateChartData = function() {
+        var monicaSteps = parseInt(document.getElementById('monicaSteps').value);
+        var joeySteps = parseInt(document.getElementById('joeySteps').value);
+        var rossSteps = parseInt(document.getElementById('rossSteps').value);
+        var phoebeSteps = parseInt(document.getElementById('phoebeSteps').value);
+        var rachelSteps = parseInt(document.getElementById('rachelSteps').value);
+        var chandlerSteps = parseInt(document.getElementById('chandlerSteps').value);
+
+        data[0].steps = Math.max(10, Math.min(monicaSteps, 100));
+        data[1].steps = Math.max(10, Math.min(joeySteps, 100));
+        data[2].steps = Math.max(10, Math.min(rossSteps, 100));
+        data[3].steps = Math.max(10, Math.min(phoebeSteps, 100));
+        data[4].steps = Math.max(10, Math.min(rachelSteps, 100));
+        data[5].steps = Math.max(10, Math.min(chandlerSteps, 100));
+
+        series.data.setAll(data);
+      };
+
+    }); // end am5.ready()
+  </script>
+
+  <!-- HTML -->
+  <div id="chartdiv"></div>
+
+  <!-- Controls -->
+  <div id="controls">
+    <label for="monicaSteps">TALLER DE EMPRENDEDORES:</label>
+    <input type="number" id="monicaSteps" min="10" max="100" value="45">
+    <label for="joeySteps">INTELIGENCIA DE NEGOCIOS:</label>
+    <input type="number" id="joeySteps" min="10" max="100" value="35">
+    <label for="rossSteps">CIBERSEGURIDAD INFO:</label>
+    <input type="number" id="rossSteps" min="10" max="100" value="25">
+    <label for="phoebeSteps">ESTRATEGIAS DE STI:</label>
+    <input type="number" id="phoebeSteps" min="10" max="100" value="18">
+    <br>
+    <label for="rachelSteps">DESARROLLO DE APPS:</label>
+    <input type="number" id="rachelSteps" min="10" max="100" value="15">
+    <label for="chandlerSteps">SERVICIO SOCIAL:</label>
+    <input type="number" id="chandlerSteps" min="10" max="100" value="11">
+    <br>
+    <button onclick="updateChartData()">Actualizar</button>
+  </div>  
+
+</body>
+</html>
